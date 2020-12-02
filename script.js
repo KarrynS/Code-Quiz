@@ -2,12 +2,9 @@
 var mainTitleEl = document.querySelector("#mainTitleEl");
 var mainBodyEl = document.querySelector("#mainBodyEl");
 var timerEl = document.querySelector("#timeLeft");
-var StartBtn = document.querySelector("#startButton");
 
 var timeLeft = 75;
 var score = 0;
-var qNumber = 1;  // Starting with Question 1
-var timeInterval;
 
 // list of all questions, choices, and answers
 var questions = [
@@ -45,40 +42,138 @@ var questions = [
     }
   ];
 
+//Generate 'Start Quiz' button on HTML
+var startBtn = document.createElement("button");
+document.body.children[1].append(startBtn);
+startBtn.id = "startButton";
+startBtn.textContent = "Start Quiz";
 
 //Add Eventlistener for Start Quiz button
-StartBtn.addEventListener("click", startQuiz);
+$("#startButton").on("click", startQuiz);
 
-//Start timer once "Start Quiz" button clicked
+//Loading quiz timer
 var startQuiz = function () {
-    //Initiate time
+    
+    //Clearing homepage content
+    document.getElementById("content").style.display = 'none';
+    startBtn.style.display = 'none';
+
+    //Initiate timer
+    var timeInterval;
     timeInterval = setInterval(function() {
         timeLeft--;
-        timerEl.textContent = timeLeft + "seconds remaining";
-        console.log(timeLeft);
+        timerEl.textContent = timeLeft + " seconds remaining";
+        
+        //console.log(timeLeft);
+       // console.log(timeInterval);
 
-        //When time = 0, end quiz
-        if (timeLeft = 0) {
+        //When time = 0, stop quiz
+        if (timeLeft <= 0) {
             clearInterval(timeInterval);
             timeLeft = 0;
             stopQuiz();
+
+            console.log(timeLeft);
         }
     }, 1000);
-    
+
     displayQuestion();
 };
 
+//Loading quiz questions and choices to HTML
+var displayQuestion = function ( ) {
+   
+    for (var i=0; i < questions.length; i++) {
+        //Display questions to HTML
+        mainTitleEl.textContent = questions[i].title;
+    
+        //Display answers to HTML 
+        var button = document.createElement("button");
+        mainBodyEl.append(button);
+        button.textContent = questions[i].choices;
+    
+        //------>Need to convert answers to individual buttons-----<//
+    
+    
+        // On clicking an answer button, load next question
+        $("Button").on("click", clickedAnswer);
+    }
+    }
 
-
-//Display quiz questions
-var displayQuestion = function () {
-
-
+//Registering participants answer
+var clickedAnswer = function(e) {
+    //Check for correct answer
+    var playerAnswer = questions[i].choices.indexOf(e.target.innerHTML);
+    if(playerAnswer === questions[i].answer){
+        $(mainBodyEl).append("<div class='answerValidation'>Correct");
+    } else {
+        //Penalise time if wrong answer
+        timeLeft = timeLeft - 10;
+        $(mainBodyEl).append("<div class='answerValidation'>Wrong");
+    }
+    //Load subsequent questions
+    ////------->?????<---------- 
 }
 
 
 
 //Stop Quiz
 var stopQuiz = function () {
+    //Display timer
+    timerEl.append(timeLeft);
+
+    //Clear timer
+    clearInterval(timeInterval);
+
+    //Adjusting HTML form
+    mainTitleEl.textContent = "End of Quiz";
+    mainBodyEl.textContent = "You quiz score is" + score;
+    
+    //creating submission for name input
+    var div = document.body.child[1].createElement("div");
+    document.body.child[1].append(div);
+    var nameBtn = document.body.child[1].createElement("button");
+    document.body.child[1].append(nameBtn);
+
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//var div = document.createElement("div");
+//document.body.children[1].append(div);
+//div.id = "startButtonDiv";
+
+
+/*
+var displayQuestion = function ( ) {
+   
+    for (var i=0; i < questions.length; i++) {
+        //Display questions to HTML
+        mainTitleEl.textContent = questions[i].title;
+    
+        //Display answers to HTML 
+        var button = document.createElement("button");
+        mainBodyEl.append(button);
+        var possibleChoices = questions[i].choices;
+        button.textContent = possibleChoices;
+    
+        //------>Need to convert answers to individual buttons-----<//
+    
+    
+        // On clicking an answer button, load next question
+        $("Button").on("click", clickedAnswer);
+    }
+    }
+    */
