@@ -1,0 +1,22 @@
+body {
+    position: relative;
+    font-family: 'Dosis', sans-serif;
+    background-color: rgb(221, 219, 219);
+    width: 70%;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px;
+    color: rgb(3, 3, 146)
+}
+
+div {
+    text-align: center;
+    margin: 20px;
+}
+
+#startButton {
+    justify-content: center;
+    margin: 20px
+}
