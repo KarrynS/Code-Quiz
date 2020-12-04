@@ -3,8 +3,10 @@ var mainTitleEl = document.querySelector("#mainTitleEl");
 var mainBodyEl = document.querySelector("#mainBodyEl");
 var timerEl = document.querySelector("#timeLeft");
 
-var timeLeft = 75;
+var timeLeft = 5;
 var score = 0;
+var timeInterval;
+var qNumber = 0;
 
 // list of all questions, choices, and answers
 var questions = [
@@ -48,8 +50,6 @@ document.body.children[1].append(startBtn);
 startBtn.id = "startButton";
 startBtn.textContent = "Start Quiz";
 
-//Add Eventlistener for Start Quiz button
-$("#startButton").on("click", startQuiz);
 
 //Loading quiz timer
 var startQuiz = function () {
@@ -58,122 +58,160 @@ var startQuiz = function () {
     document.getElementById("content").style.display = 'none';
     startBtn.style.display = 'none';
 
-    //Initiate timer
-    var timeInterval;
+    //Begin countdown timer and display to HTML
     timeInterval = setInterval(function() {
         timeLeft--;
         timerEl.textContent = timeLeft + " seconds remaining";
-        
-        //console.log(timeLeft);
-       // console.log(timeInterval);
 
         //When time = 0, stop quiz
         if (timeLeft <= 0) {
             clearInterval(timeInterval);
-            timeLeft = 0;
             stopQuiz();
-
-            console.log(timeLeft);
         }
     }, 1000);
 
+    //Load Quiz questions
     displayQuestion();
 };
 
-//Loading quiz questions and choices to HTML
+//Add Eventlistener for Start Quiz button
+$("#startButton").on("click", startQuiz);
+
+//Loading quiz MCQ to HTML
 var displayQuestion = function ( ) {
-   
-    for (var i=0; i < questions.length; i++) {
-        //Display questions to HTML
-        mainTitleEl.textContent = questions[i].title;
-    
+    //Display questions to HTML
+        mainTitleEl.textContent = questions[qNumber].title;
+        mainBodyEl.innerHTML = "";
+
+        for (var j=0; j <questions[qNumber].choices.length; j++) {
+
         //Display answers to HTML 
         var button = document.createElement("button");
-        mainBodyEl.append(button);
-        button.textContent = questions[i].choices;
-    
-        //------>Need to convert answers to individual buttons-----<//
-    
-    
+        mainBodyEl.appendChild(button);
+        button.id = "choicesButton";
+        button.textContent = questions[qNumber].choices[j];
+        }
+        console.log(questions[qNumber].title);
+        console.log(questions[qNumber].choices);
+
+        //--------->if questions completed before time=0 end game here--------//
+        
+
         // On clicking an answer button, load next question
         $("Button").on("click", clickedAnswer);
-    }
-    }
+    
+}
 
 //Registering participants answer
 var clickedAnswer = function(e) {
     //Check for correct answer
-    var playerAnswer = questions[i].choices.indexOf(e.target.innerHTML);
-    if(playerAnswer === questions[i].answer){
-        $(mainBodyEl).append("<div class='answerValidation'>Correct");
+    var playerAnswer = e.target.innerHTML;
+    
+    if(playerAnswer === questions[qNumber].answer){
+        $(mainBodyEl).append("<hr>");
+        $(mainBodyEl).append("<div class='answerValidation'>Correct ✅");
     } else {
         //Penalise time if wrong answer
         timeLeft = timeLeft - 10;
-        $(mainBodyEl).append("<div class='answerValidation'>Wrong");
+        $(mainBodyEl).append("<hr>");
+        $(mainBodyEl).append("<div class='answerValidation'>Wrong ❌");
     }
     //Load subsequent questions
-    ////------->?????<---------- 
+    qNumber++;
+    setTimeout(displayQuestion, 600);
+   
 }
-
-
 
 //Stop Quiz
 var stopQuiz = function () {
-    //Display timer
-    timerEl.append(timeLeft);
-
+    
     //Clear timer
     clearInterval(timeInterval);
 
     //Adjusting HTML form
     mainTitleEl.textContent = "End of Quiz";
-    mainBodyEl.textContent = "You quiz score is" + score;
+    mainBodyEl.textContent = "You scored " + score;
     
-    //creating submission for name input
-    var div = document.body.child[1].createElement("div");
-    document.body.child[1].append(div);
-    var nameBtn = document.body.child[1].createElement("button");
-    document.body.child[1].append(nameBtn);
+    //Form for name submission
+    var nameForm = $(`<form><input class="form-control" id="nameForm" type="text" placeholder="Enter your name into the leaderboard"></form`);
+    $(mainBodyEl).append(nameForm);
 
+    //Submitting score
+    $(nameForm).submit(function(e) {
+        e.preventDefault();
+        nameSubmit();
+    });
+};
 
+//Retrieve highscores from local storage
+var highScoresObj = {};
+if (localStorage.getItem ("highscores") ){
+    highScoresObj = JSON.parse(localStorage.getItem("highscores"));
 }
 
+//Retrieve playerID from local storage
+var playerId = 1;
+if (localStorage.getItem("playerId")) {
+    //playerId = JSON.parse(localStorage.getItem("playerId")) +1;
+    playerId = parseInt(localStorage.getItem("playerId")) +1;
+}
 
+//Establishing Player Id
+localStorage.setItem("playerId", playerId);
 
+//Load Leader Board page
+var loadHighScores = function() {
+    // Clearing HTML body
+    $(mainBodyEl).empty();
+    $('#timeDisplay').empty();
 
+    //Load Highsccores title
+    mainTitleEl.textContent = "Highscores";
 
+    //Load highscores and playerId to page
+    $(mainBodyEl).append("<p id='highscorelist'>"+ playerId + " <span id=highscorescore>"+ highScoresObj+"</span></p");
 
-
-
-
-
-
-
-
-
-//var div = document.createElement("div");
-//document.body.children[1].append(div);
-//div.id = "startButtonDiv";
-
-
-/*
-var displayQuestion = function ( ) {
-   
-    for (var i=0; i < questions.length; i++) {
-        //Display questions to HTML
-        mainTitleEl.textContent = questions[i].title;
     
-        //Display answers to HTML 
-        var button = document.createElement("button");
-        mainBodyEl.append(button);
-        var possibleChoices = questions[i].choices;
-        button.textContent = possibleChoices;
-    
-        //------>Need to convert answers to individual buttons-----<//
-    
-    
-        // On clicking an answer button, load next question
-        $("Button").on("click", clickedAnswer);
+    //Clear highscores
+    var clearHighscores = function () {
+        localStorage.clear();
+        $("highscorelist").remove();
     }
+
+    //Adding Clear Highscores Button
+    var clearHighscoresBtn = document.createElement("button")
+    document.body.children[1].append(clearHighscoresBtn);
+    clearHighscoresBtn.id = "clearHighscores"
+    clearHighscoresBtn.textContent = "Clear Highscores";
+    $(clearHighscoresBtn).on("click", clearHighscores);
+
+    //Adding Play Again button
+    var reloadQuiz = () => location.reload();
+    var playAgainBtn = document.createElement("button")
+    document.body.children[1].append(playAgainBtn);
+    playAgainBtn.id = "playagain"
+    playAgainBtn.textContent = "Play Again";
+    $(playAgainBtn).on("click", reloadQuiz);
+    
+}
+
+//Handle submitting player ID to form and storing in local storage
+var nameSubmit = function () {
+
+    //Store name to local storage
+    var nameInput = document.querySelector("#nameForm").value.trim();
+
+    if (nameInput === "") {
+        $("form").append("<p> Name cannot be left bank</p>");  
+    } else {
+        localStorage.setItem("playerId", JSON.stringify(nameInput));
+        localStorage.setItem("highscores", JSON.stringify(score));
+
+        //Load highscores page
+        loadHighScores();
     }
-    */
+}
+
+//Event Listener for clicking "View Highscores" 
+$("#viewHighscores").on("click", loadHighScores)
+
