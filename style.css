@@ -2,7 +2,23 @@ body {
     position: relative;
     font-family: 'Dosis', sans-serif;
     background-color: rgb(221, 219, 219);
-    width: 70%;
+}
+
+#viewHighscores {
+    font-size: 18px;
+    margin-top: 20px;
+    margin-left: 10px;
+    font-weight: bold;
+    font-style: underline;
+    color: blue;
+}
+
+#timeDisplay {
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: 10px;
+    float: right;
+    
 }
 
 h1 {
@@ -13,10 +29,59 @@ h1 {
 
 div {
     text-align: center;
-    margin: 20px;
+    position: relative;
+}
+
+#mainBodyEl {
+    font-size: 19px;
 }
 
 #startButton {
-    justify-content: center;
-    margin: 20px
+    border-radius: 12px;
+    color : blue;
+    display: inline-block;
+    font-size: 20px;
+    position: absolute;
+    left: 50%;
 }
+
+#choicesButton {
+    justify-content: center;
+    border-radius: 12px;
+    color : blue;
+    display: inline-block;
+    font-size: 16px;
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+#nameForm {
+    width: 80%;
+    display: inline-flex;
+    box-sizing: border-box;
+    position: relative;
+    margin-top: 20px;
+}
+
+#clearHighscores {
+    position: absolute;
+    border-radius: 12px;
+    color : blue;
+    display: inline-block;
+    left: 50%;
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+#playagain {
+    position: absolute;
+    justify-content: center;
+    border-radius: 12px;
+    color : blue;
+    display: inline-block;
+    font-size: 16px;
+    right: 50%;
+    margin-right: 10px;
+    font-size: 20px;
+}
+
