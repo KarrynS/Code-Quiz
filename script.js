@@ -1,3 +1,5 @@
+$(document).ready(function () {
+
 //Grabbing elements from HTML
 var mainTitleEl = document.querySelector("#mainTitleEl");
 var mainBodyEl = document.querySelector("#mainBodyEl");
@@ -11,17 +13,11 @@ var qNumber = 0;
 
 
 //Retrieve highscores from local storage
-var person = {}
+var highscores = []
+
 if (localStorage.getItem ("highscoresString") ){
-  person = JSON.parse(localStorage.getItem("highscoresString"));
+  highscores = JSON.parse(localStorage.getItem("highscoresString"));
 }
-
-//Retrieve playerID from local storage
-//if (localStorage.getItem("playerId")) {
- // playerId = localStorage.playerId;
- //console.log(playerId);
-//}
-
 
 // list of all questions, choices, and answers
 var questions = [
@@ -131,7 +127,6 @@ var clickedAnswer = function(e) {
     //Load subsequent questions
     qNumber++;
     setTimeout(displayQuestion, 600);
-   
 }
 
 //Stop Quiz
@@ -167,25 +162,25 @@ var loadHighScores = function() {
   mainTitleEl.textContent = "Highscores";
 
   //Sorting highscores string
-  var highscoresSorted = Object.values(person).sort(function(a, b){b - a});
+  //var highscoresSorted = highscores.sort(function(a, b){b - a});
  
   //Load highscores and playerId to page
-  highscoresSorted.forEach(function(player){
+  highscores.forEach(function(player){
       $(mainBodyEl).append("<p id=highscorelist>" + player.name + "<span id=highscoreScore>" + player.score +"</span></p");
   })
   
+  //Clear highscores
+  var clearHighscores = function () {
+    localStorage.clear();
+    $("#highscorelist").remove();
+  }
+
   //Adding Clear Highscores Button
   var clearHighscoresBtn = document.createElement("button");
   document.body.children[1].append(clearHighscoresBtn);
   clearHighscoresBtn.id = "clearHighscores"
   clearHighscoresBtn.textContent = "Clear Highscores";
   $("#clearHighscores").on("click", clearHighscores);
-
-  //Clear highscores
-  var clearHighscores = function () {
-    localStorage.clear();
-    $("#highscorelist").clear();
-}
 
   //Adding Play Again button
   var reloadQuiz = () => location.reload();
@@ -205,10 +200,10 @@ var nameSubmit = function () {
   if (nameInput === "") {
       $("form").append("<p> Name cannot be left bank</p>");  
   } else {
-    var person = {name: nameInput, score: timeLeft}
-    localStorage.setItem("highscoresString", JSON.stringify(person));
-    console.log(person);
-
+    var person = {name: nameInput, score: timeLeft};
+    highscores.push(person);
+    localStorage.setItem("highscoresString", JSON.stringify(highscores));
+ 
       //Load highscores page
       loadHighScores();
   }
@@ -219,3 +214,5 @@ $("#startButton").on("click", startQuiz);
 
 //Event Listener for clicking "View Highscores" 
 $("#viewHighscores").on("click", loadHighScores);
+
+})
